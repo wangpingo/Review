@@ -15,7 +15,8 @@
 
                 <div class="options">
                     <span>
-                         评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;<a> 阅读全文 &gt;</a>
+                         评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;
+                            <router-link   :to="{ name: 'Acticle', params: { acticleId: 123 }}"> 阅读全文 &gt; </router-link>
                     </span>
                 </div>
             </div>
@@ -34,7 +35,8 @@
 
                 <div class="options">
                     <span>
-                         评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;<a> 阅读全文 &gt;</a>
+                         评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;
+                        <router-link :to="{ name: 'Acticle', params: { acticleId: 123 }}"> 阅读全文 &gt; </router-link>
                     </span>
                 </div>
             </div>
@@ -100,7 +102,20 @@
 </template>
 
 <script>
-    export default {}
+    export default {
+        beforeMount() {
+            this.$http.get('http://localhost:3000/first').then(
+                response=>{
+
+                }
+            )
+        },
+        data() {
+            return {
+
+            }
+        }
+    }
 </script>
 
 <style lang="scss" rel='stylesheet/scss'>

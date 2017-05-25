@@ -17,7 +17,9 @@
     export default {
       name: 'app',
       data () {
+          return{
 
+          }
       },
       components: {
           'v-header': header
