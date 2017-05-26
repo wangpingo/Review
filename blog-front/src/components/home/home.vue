@@ -1,38 +1,19 @@
 <template>
     <div class="home">
         <div class="home-left">
-            <div style="overflow: hidden;margin-bottom: 50px">
-                <span class="title">明心见性的一段对话</span>
-                <span class="date">2016年3月17日</span>
+
+            <div style="overflow: hidden;margin-bottom: 50px" v-for="(acticle,index)  in acticles">
+                <span class="title">{{acticle.title}}</span>
+                <span class="date">{{acticle.time | timeChange}}</span>
                 <hr>
                 <div class="content">
-                    以下是我和妹子聊到房屋拆迁话题时的对话，希望我们能一直保持平常心，认真做自己……
+                    {{acticle.sTitle}}
                 </div>
                 <img src="../../assets/1.jpg" class="cont-img">
                 <div class="article-footer">
-                    Tags:&nbsp;<span class="tags">学习</span>
+                    Tags:&nbsp;<span class="tags">{{acticle.class | class }}</span>
                 </div>
-
-                <div class="options">
-                    <span>
-                         评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;
-                            <router-link   :to="{ name: 'Acticle', params: { acticleId: 123 }}"> 阅读全文 &gt; </router-link>
-                    </span>
-                </div>
-            </div>
-
-            <div style="overflow: hidden;margin-bottom: 50px">
-                <span class="title">明心见性的一段对话</span>
-                <span class="date">2016年3月17日</span>
-                <hr>
-                <div class="content">
-                    以下是我和妹子聊到房屋拆迁话题时的对话，希望我们能一直保持平常心，认真做自己……
-                </div>
-                <img src="../../assets/1.jpg" class="cont-img">
-                <div class="article-footer">
-                    Tags:&nbsp;<span class="tags">学习</span>
-                </div>
-
+                {{acticle.img}}
                 <div class="options">
                     <span>
                          评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;
@@ -41,11 +22,12 @@
                 </div>
             </div>
 
+
             <div class="block">
                 <span class="demonstration"></span>
                 <el-pagination
                         layout="prev, pager, next"
-                        :total="50">
+                        :total="4" :page-size="2" @current-change="currentPage">
                 </el-pagination>
             </div>
 
@@ -61,8 +43,8 @@
             </el-row>
             
             <div class="tagSelect">
-                <a>生活</a>  &nbsp;&nbsp;&nbsp;&nbsp;<a>学习</a>  <br>
-                <a>旅行</a> &nbsp;&nbsp;&nbsp;&nbsp; <a>回忆</a>
+                <a @click="selectActicle(1)" :class="currentIndex==1?'active':'' ">生活</a>  &nbsp;&nbsp;&nbsp;&nbsp;<a @click="selectActicle(2)" :class="currentIndex==2?'active':'' ">学习</a>  <br>
+                <a @click="selectActicle(3)" :class="currentIndex==3?'active':'' ">旅行</a> &nbsp;&nbsp;&nbsp;&nbsp; <a @click="selectActicle(4)" :class="currentIndex==4?'active':'' ">回忆</a>
             </div>
             
             <el-row>
@@ -86,8 +68,8 @@
 
                 <el-col :span="24"><div class="grid-content bg-purple-dark ">友情链接</div></el-col>
                 <div class="friendHerf">
-                    <span>cnode社区</span><span>vue官网 </span><span>阮一峰博客</span> <br>
-                    <span>张鑫旭</span><span>郑海波</span><span>玉伯</span>
+                    <span> <a href="https://cnodejs.org/" target="_blank">cnode社区</a></span><span><a target="_blank" href="https://cn.vuejs.org/">vue官网</a> </span><span><a target="_blank" href="http://www.ruanyifeng.com/home.html">阮一峰</a></span> <br>
+                    <span><a href="http://www.zhangxinxu.com/" target="_blank">张鑫旭</a></span><span><a href="http://www.blogchina.com/" target="_blank">博客中国</a></span><span><a href="http://weibo.com/lifesinger" target="_blank">玉伯</a></span>
                 </div>
             </el-row>
             <el-row>
@@ -104,19 +86,51 @@
 <script>
     export default {
         beforeMount() {
-            this.$http.get('http://localhost:3000/first').then(
+            this.$http.get('http://localhost:3000/acticle?page=1').then(
                 response=>{
-
+                    this.acticles=response.data;
                 }
             )
         },
         data() {
             return {
+                currentIndex:0,
+                acticles:null
+            }
+        },
+        methods: {
+            selectActicle(index) {
 
+                this.currentIndex = index
+
+            },
+            currentPage(currentPage) {
+                this.$http.get('http://localhost:3000/acticle?page='+currentPage).then(
+                    response=>{
+                        this.acticles=response.data;
+                        console.log(this.acticles);
+                    }
+                )
             }
         }
     }
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <style lang="scss" rel='stylesheet/scss'>
     .home{
@@ -125,6 +139,10 @@
         margin: 0 auto;
         color: #5e6d82;
 
+        .active{
+            background:#5e6d82;
+            color: white;
+        }
         .home-left{
             width:650px;
             float: left;
@@ -154,12 +172,17 @@
                 margin-bottom: 10px;
             }
             .content{
-                width: 525px;
+                width: 582px;
                 padding:0 50px 0 25px;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
                 margin-bottom: 30px;
+                p{
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
             }
             .article-footer{
                 margin-top: 20px;
@@ -212,10 +235,7 @@
                 text-align: center;
                 a{
                     padding: 5px;
-                    &:hover{
-                        background:#5e6d82;
-                        color: white;
-                    }
+
                 }
 
 
@@ -239,6 +259,9 @@
                     width: 80px;
                     line-height: 40px;
                     text-align: center;
+                    a{
+                        color:#5e6d82;
+                    }
                 }
             }
             .weiXin{

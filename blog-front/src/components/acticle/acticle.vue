@@ -103,8 +103,8 @@
 
                 <el-col :span="24"><div class="grid-content bg-purple-dark ">友情链接</div></el-col>
                 <div class="friendHerf">
-                    <span>cnode社区</span><span>vue官网 </span><span>阮一峰博客</span> <br>
-                    <span>张鑫旭</span><span>郑海波</span><span>玉伯</span>
+                    <span> <a href="https://cnodejs.org/" target="_blank">cnode社区</a></span><span><a target="_blank" href="https://cn.vuejs.org/">vue官网</a> </span><span><a target="_blank" href="http://www.ruanyifeng.com/home.html">阮一峰</a></span> <br>
+                    <span><a href="http://www.zhangxinxu.com/" target="_blank">张鑫旭</a></span><span><a href="http://www.blogchina.com/" target="_blank">博客中国</a></span><span><a href="http://weibo.com/lifesinger" target="_blank">玉伯</a></span>
                 </div>
             </el-row>
             <el-row>
@@ -173,11 +173,32 @@
     }
 </script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <style lang="scss" rel='stylesheet/scss'>
 
     .content-detail{
         margin: 40px auto;
         p{
+            width: 613px;
             text-indent: 25px;
             margin-bottom: 10px;
             line-height: 25px;
