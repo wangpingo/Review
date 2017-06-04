@@ -1,12 +1,12 @@
 <template>
         <div id="bg-color">
                 <div id="header">
-                        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                        <el-menu  :default-active="activeIndex"   class="el-menu-demo" mode="horizontal" @select="handleSelect" :active="activeIndex" >
                                 <el-menu-item index="1" class="name">
                                         <img src="../../assets/waniu1.jpg" />
                                 </el-menu-item>
-                                <el-input placeholder="输入您感兴趣的内容..."  class="search">
-                                        <el-button slot="append" icon="search"></el-button>
+                                <el-input placeholder="输入您感兴趣的内容..." @keyup.native="show($event)"   class="search" v-model="selectValue" >
+                                        <el-button slot="append" icon="search" @click.stop.prevent="selectKeyWords"  ></el-button>
                                 </el-input>
                                 <el-menu-item index="2" >
                                         <router-link to="/home">首页</router-link>
@@ -28,27 +28,59 @@
 </template>
 
 <script>
+    import Bus from '../eventBus.js'
     export default {
+        created(){
+
+        },
+        beforeRouteUpdate(){
+        },
         data() {
             return {
-                activeIndex: '2'
+                activeIndex: '2',
+                selectValue:null,
+                disable:false
             };
         },
         methods: {
-            handleSelect(key, keyPath) {
-                console.log(key, keyPath);
+            handleSelect(key) {
+                this.activeIndex= key
+
+                if (key == 3 || key == 4){}
             },
             goMyInfo() {
                 this.$router.push('/myInfo')
+            },
+            selectKeyWords() {
+                if (this.selectValue && this.selectValue.trim()  ) {
+//                    Bus.$emit('selectValue', this.selectValue.trim());
+                    this.activeIndex='2'
+                    this.$router.push({ path: '/', query: { keyWords: this.selectValue.trim() }})
+                }
+            },
+            show:function(ev){
+                if(ev.keyCode == 13){
+                    if (this.selectValue && this.selectValue.trim()  ) {
+//                    Bus.$emit('selectValue', this.selectValue.trim());
+                        this.activeIndex='2'
+                        this.$router.push({ path: '/', query: { keyWords: this.selectValue.trim() }})
+                    }
+                }
             }
         }
     }
 </script>
 
+
+
 <style lang="scss" rel='stylesheet/scss'>
         #bg-color{
                 background-color: #eef1f6;
                 width: 100%;
+                position: fixed;
+                overflow: hidden;
+                top: 0;
+                z-index: 999;
         }
         #header{
                 width: 1080px;

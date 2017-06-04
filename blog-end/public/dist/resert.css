@@ -1,0 +1,58 @@
+/* reset */
+html,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}
+header,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:normal;}
+html,body,fieldset,img,iframe,abbr{border:0;}
+i,cite,var,address,dfn{font-style:normal;}
+[hidefocus],summary{outline:0;}
+ul, ol{list-style:none;}
+h1,h2,h3,h4,h5,h6{font-size:100%;}
+small{font-size:80%;}
+sup,sub{font-size:83%;}
+pre,code,kbd,samp{}
+q:before,q:after{content:none;}
+textarea{overflow:auto;resize:none;}
+label,summary{cursor:default;}
+a,button{cursor:pointer;}
+a:link,:active{background-color:none}
+h1,h2,h3,h4,h5,h6,strong,b{font-weight:bold;}
+del,ins,u,s,a,a:hover{text-decoration:none;}
+body,textarea,input,button,select,keygen,legend{font:14px/1 Helvetica, Tahoma, Arial, "Microsoft YaHei", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;color:#333;outline:0;}
+body{background:#eeeeee; word-wrap: break-word; word-break: break-all;position:relative; padding-right:0 !important;overflow: auto !important;}
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+input::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #999;
+}
+input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #999;
+}
+input::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #999;
+}
+input:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #999;
+}
+input::-ms-clear, ::-ms-reveal{display: none;}
+select {
+    border: solid 1px #ccc;
+    height:30px;
+
+
+    appearance:none;
+    -moz-appearance:none;
+    -webkit-appearance:none;
+
+
+    background-repeat:no-repeat;
+    background-position:right -137px;
+
+
+    padding-right: 14px;
+
+}
+
+select::-ms-expand { display: none; }
+

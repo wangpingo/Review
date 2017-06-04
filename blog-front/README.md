@@ -1,7 +1,10 @@
 # blog-front
 
-> blog
+> blog 
 
+```javascript
+
+```
 ## Build Setup
 
 ``` bash

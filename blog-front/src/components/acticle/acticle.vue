@@ -1,25 +1,18 @@
 <template>
     <div class="home">
         <div class="home-left">
-            <div style="overflow: hidden;margin-bottom: 50px">
-                <span class="title">明心见性的一段对话</span>
-                <span class="date">2016年3月17日</span>
+            <div style="overflow: hidden;margin-bottom: 50px" v-if="article">
+                <span class="title">{{article.title}}</span>
+                <span class="date">{{article.time | timeChange}}</span>
                 <hr>
 
-                <img src="../../assets/1.jpg" class="cont-img">
+                <img :src="article.img" class="cont-img">
                 <div class="article-footer">
-                    Tags:&nbsp;<span class="tags">学习</span>
+                    Tags:&nbsp;<span class="tags">{{article.class | class }}</span>
                 </div>
-                <div class="content-detail">
-                    <p>以下是我和妹子聊到房屋拆迁话题时的对话，希望我们能一直保持平常心，认真做自己以下是我和妹子聊到房屋拆迁话题时的对话，希望我以下是我和妹子聊到房屋拆迁
-                        话题时的对话，希望我
-                    </p>
-                    <p>以下是我和妹子聊到房屋拆迁话题时的对话，希望我们能一直保持平常心，认真做自己以下是我和妹子聊到房屋拆迁话题时的对话，希望我以下是我和妹子聊到房屋拆迁
-                        话题时的对话，希望我
-                    </p>
-                    <p>以下是我和妹子聊到房屋拆迁话题时的对话，希望我们能一直保持平常心，认真做自己以下是我和妹子聊到房屋拆迁话题时的对话，希望我以下是我和妹子聊到房屋拆迁
-                        话题时的对话，希望我
-                    </p>
+                <!--v-html="article.content"-->
+                <div class="content-detail" >
+                    <vue-markdown :source='article.content' class="mark"> </vue-markdown>
                 </div>
                 <div class="options">
                     <span>
@@ -32,48 +25,27 @@
             <div class="xiangGuan">
                 相关文章:
                 <div class="line"></div>
-                <ul>
-                    <li><a>明心见性的一段对话</a>(2016-3-17 10:45:44)</li>
-                    <li><a>人生何尝不是一场赌局  </a>(2016-3-11 13:23:45)</li>
-                    <li><a>初冬，景如故  </a>(2015-11-21 17:2:53)</li>
-                    <li><a>从丁元英到叶子农  </a>(2015-8-31 19:12:19)</li>
-                    <li><a>五十度灰的天空 </a> (2015-4-30 4:47:49)</li>
-
+                <ul >
+                    <li v-for="(item,index)  in xiangGuan">
+                        <router-link :to="{path:'/acticle',query: {acticleId: item.acticleId}}"> {{item.title}} </router-link>
+                        ({{item.time | timeChange}})
+                    </li>
                 </ul>
+
             </div>
             <div class="comments">
                 留言列表:
-                <div class="line"></div>
-                <div class="comment">
-                    <img src="../../assets/da8e974dc_s.jpg" alt="">
-                    <span>王晓义  2016-03-06 发表 <br>
-                          <a> 你的文采不错哦！</a>
+                <div v-for="(item,index)  in comments">
+                    <div class="line"></div>
+                    <div class="comment">
+                        <img src="../../assets/da8e974dc_s.jpg" alt="">
+                        <span>{{item.name}}&nbsp; {{item.time | timeChange}} &nbsp; &nbsp;发表 <br>
+                          <a> {{item.content}}</a>
                     </span>
+                    </div>
                 </div>
-                <div class="line"></div>
 
-                <div class="comment">
-                <img src="../../assets/da8e974dc_s.jpg" alt="">
-                <span>王晓义  2016-03-06 发表 <br>
-                          <a> 你的文采不错哦！</a>
-                    </span>
-            </div>
-                <div class="line"></div>
 
-                <div class="comment">
-                    <img src="../../assets/da8e974dc_s.jpg" alt="">
-                    <span>王晓义  2016-03-06 发表 <br>
-                          <a> 你的文采不错哦！</a>
-                    </span>
-                </div>
-                <div class="line"></div>
-                <div class="comment">
-                    <img src="../../assets/da8e974dc_s.jpg" alt="">
-                    <span>王晓义  2016-03-06 发表 <br>
-                          <a> 你的文采不错哦！</a>
-                    </span>
-                </div>
-                <div class="line"></div>
             </div>
         </div>
 
@@ -118,22 +90,22 @@
                 <el-col :span="24"><div class="grid-content bg-purple-dark ">文章评论:</div></el-col>
             </el-row>
 
-            <el-form ref="form" :model="form" label-width="80px">
-                <el-form-item label="昵称:">
+            <el-form ref="form"  :model="form" label-width="80px" :rules="rules">
+                <el-form-item label="昵称:" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
 
-                <el-form-item label="邮箱:">
+                <el-form-item label="邮箱:" prop="email">
                     <el-input v-model="form.email"></el-input>
                 </el-form-item>
 
-                <el-form-item label="正文:">
+                <el-form-item label="正文:" prop="desc">
                     <el-input type="textarea" v-model="form.desc"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button
                             plain
-                            @click="open2">
+                            @click="submitForm('form')">
                         发表评论
                     </el-button>
                 </el-form-item>
@@ -145,20 +117,93 @@
 </template>
 
 <script>
-    export default {
-        created() {
 
+    import VueMarkdown from 'vue-markdown'
+
+    export default {
+
+        beforeMount() {
+            this.articleId=this.$route.query.acticleId
+            this.geArticle(this.articleId)
+            this.getTitle()
+            this.getComments(this.articleId)
         },
         data() {
+            var validateName = (rule, value, callback) => {
+                if (value === '' || value.length>10) {
+                    callback(new Error('请输入昵称(小于10字符)'));
+                }else {
+                    callback();
+                }
+            };
+            var validateEmail = (rule, value, callback) => {
+                let reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+                if (!reg.test(value)) {
+                    callback(new Error('请输入正确的邮箱'));
+                }else {
+                    callback();
+                }
+
+            };
+            var validateDesc = (rule, value, callback) => {
+                if (value === '' || value.length>50) {
+                    callback(new Error('请输入文本内容(小于50个字)'));
+                }else {
+                    callback();
+                }
+
+            };
+
             return {
                 form: {
                     name: '',
                     email: '',
-                    desc: ''
-                }
+                    desc: '',
+                    id:''
+                },
+                rules: {
+                name: [
+                    { validator: validateName, trigger: 'blur' }
+                ],
+                    email: [
+                    { validator: validateEmail, trigger: 'blur' }
+                ],
+                    desc: [
+                    { validator: validateDesc, trigger: 'blur' }
+                ]
+            },
+                article: 0,
+                articleId: 0,
+                xiangGuan:null,
+                comments:null
+
             }
         },
         methods: {
+            submitForm(formName) {
+                this.form.id=this.$route.query.acticleId
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$http.post('http://localhost:3000/insertActileComment',{ruleForm:this.form}).then(
+                            response=>{
+                                if(response.data.affectedRows>0){
+
+                                    this.getComments(this.form.id);
+                                    this.$confirm('发表成功')
+                                        .then(_ => {
+
+                                            done();
+                                        })
+                                        .catch(_ => {});
+                                }
+                            }
+                        )
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
             onSubmit() {
                 console.log('submit!');
             },
@@ -168,7 +213,48 @@
                     message: '这是一条不会自动关闭的消息',
                     duration: 0
                 });
+            },
+            geArticle(id) {
+                this.$http.get('http://localhost:3000/getArticle?article='+id).then(
+                    response=>{
+                        this.article=response.data[0];
+                        console.log(this.article);
+                    }
+                )
+            },
+            getTitle() {
+                this.$http.get('http://localhost:3000/getTitle').then(
+                    response=>{
+                        this.xiangGuan=response.data;
+
+                        console.log(this.xiangGuan);
+
+                    }
+                )
+            },
+            getComments(id) {
+                this.$http.get('http://localhost:3000/getComments?article='+id).then(
+                    response=>{
+                        this.comments=response.data;
+
+                        console.log(this.comments);
+
+                    }
+                )
             }
+        },
+        watch: {
+            '$route': {
+                handler(newV){
+                    this.geArticle(newV.query.acticleId)
+                    this.getComments(newV.query.acticleId)
+
+                },
+                deep:true
+            }
+        },
+        components: {
+            VueMarkdown
         }
     }
 </script>
@@ -198,11 +284,26 @@
     .content-detail{
         margin: 40px auto;
         p{
-            width: 613px;
+            width: 650px;
             text-indent: 25px;
             margin-bottom: 10px;
             line-height: 25px;
         }
+        .mark{
+            width: 650px;
+            display: block;
+            line-height: 25px;
+            code{
+                margin-left: 20px;
+                display: inline-block;
+                border-radius: 4px;
+                background: #cccccc;
+                padding-left: 20px;
+                padding-right: 20px;
+                width: 600px;
+            }
+        }
+
     }
     .line{
         height: 1px;
@@ -217,6 +318,9 @@
         }
         a:hover{
             text-decoration: underline;
+        }
+        .router-link-active{
+            color: #5e6d82;
         }
     }
     .comments{

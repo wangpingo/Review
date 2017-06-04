@@ -8,7 +8,6 @@ import axios from 'axios'
 Vue.prototype.$http = axios
 
 Vue.use(ElementUI)
-
 Vue.filter("timeChange", function (value) {
     return value.split('T')[0]
 });

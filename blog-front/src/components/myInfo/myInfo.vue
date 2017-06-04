@@ -88,13 +88,18 @@
 </template>
 
 <script>
-    export default {}
+    export default {
+        data() {
+            return {
+            }
+        }
+    }
 </script>
 
 <style lang="scss" rel='stylesheet/scss'>
     .myInfo{
         width: 1080px;
-        margin: 10px auto;
+        margin: 65px auto;
         color: #5e6d82;
         .line{
             margin-bottom: 10px;

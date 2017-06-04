@@ -1,23 +1,22 @@
 <template>
     <div class="home">
-        <div class="home-left">
+        <div class="home-left" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中" element-loading-customClass="myClass">
 
-            <div style="overflow: hidden;margin-bottom: 50px" v-for="(acticle,index)  in acticles">
+            <div style="overflow: hidden;margin-bottom: 50px" v-for="(acticle,index)  in acticles"  >
                 <span class="title">{{acticle.title}}</span>
                 <span class="date">{{acticle.time | timeChange}}</span>
                 <hr>
                 <div class="content">
                     {{acticle.sTitle}}
                 </div>
-                <img src="../../assets/1.jpg" class="cont-img">
+                <img  :src="acticle.img"    class="cont-img" >
                 <div class="article-footer">
                     Tags:&nbsp;<span class="tags">{{acticle.class | class }}</span>
                 </div>
-                {{acticle.img}}
                 <div class="options">
                     <span>
-                         评论:24 &nbsp;| &nbsp;浏览:1128&nbsp; |&nbsp;
-                        <router-link :to="{ name: 'Acticle', params: { acticleId: 123 }}"> 阅读全文 &gt; </router-link>
+                         评论:{{acticle.commendNum}} &nbsp;| &nbsp;浏览:{{acticle.watchNum}}&nbsp; |&nbsp;
+                        <router-link :to="{path:'/acticle',query: {acticleId: acticle.acticleId}}"> 阅读全文 &gt; </router-link>
                     </span>
                 </div>
             </div>
@@ -27,7 +26,7 @@
                 <span class="demonstration"></span>
                 <el-pagination
                         layout="prev, pager, next"
-                        :total="4" :page-size="2" @current-change="currentPage">
+                        :total="articleNum" :page-size="2" @current-change="currentPage">
                 </el-pagination>
             </div>
 
@@ -48,7 +47,7 @@
             </div>
             
             <el-row>
-                <el-col :span="24"><div class="grid-content bg-purple-dark ">最新留言</div></el-col>
+                <el-col :span="24"><div class="grid-content bg-purple-dark ">精彩留言</div></el-col>
 
             </el-row>
             <ul>
@@ -80,39 +79,119 @@
                 <img src="../../assets/weixin.jpg" alt="">
             </div>
         </div>
+        <el-dialog
+                title="提示"
+                :visible.sync="dialogVisible"
+                size="tiny"
+                 >
+            <span>没能找到您搜索的文章-_-!!</span>
+            <span slot="footer" class="dialog-footer">
+             <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import Bus from '../eventBus.js'
     export default {
-        beforeMount() {
-            this.$http.get('http://localhost:3000/acticle?page=1').then(
+        created() {
+            this.$http.get('http://localhost:3000/article?page=1').then(
                 response=>{
-                    this.acticles=response.data;
+                    this.acticles=response.data
                 }
             )
+            this.getArticleNum();
+
+
+        },
+        beforeMount() {
+            if (this.$route.query.keyWords){
+                this.getSelectArticle(this.$route.query.keyWords);
+
+            }
         },
         data() {
             return {
                 currentIndex:0,
-                acticles:null
+                acticles:null,
+                articleNum:null,
+                dialogVisible:false,
+                keyWords:null,
+                fullscreenLoading:false
             }
         },
         methods: {
-            selectActicle(index) {
+            openFullScreen() {
+                this.fullscreenLoading = true;
+                setTimeout(() => {
+                    this.fullscreenLoading = false;
+                }, 3000);
+            },
+            selectActicle(classIndex) {
 
-                this.currentIndex = index
+                this.$http.post('http://localhost:3000/getArticleByClass',{classIndex}).then(
+                    response=>{
+                        this.acticles=response.data
+                        this.articleNum=response.data.length
+                        this.currentIndex=classIndex
+                    }
+                )
 
             },
             currentPage(currentPage) {
-                this.$http.get('http://localhost:3000/acticle?page='+currentPage).then(
+                this.$http.get('http://localhost:3000/article?page='+currentPage).then(
                     response=>{
-                        this.acticles=response.data;
-                        console.log(this.acticles);
+                        this.acticles=response.data
                     }
                 )
+            },
+            getArticleNum() {
+                this.$http.get('http://localhost:3000/articleNum').then(
+                    response=>{
+                        this.articleNum=response.data[0]['count(*)']
+
+                    }
+                )
+            },
+            getSelectArticle(keyWords) {
+                if (keyWords){
+                    this.$http.post('http://localhost:3000/selectArticle',{keyWords}).then(
+                        response=>{
+                            if(response.data.length>0){
+                                this.acticles=response.data
+                                this.articleNum=response.data.length
+                            }else {
+                                this.dialogVisible = true
+                                this.getArticleNum();
+                            }
+
+                        }
+                    )
+                }else {
+                    this.getArticleNum();
+                }
             }
-        }
+        },
+        watch: {
+            '$route': {
+                handler(newV){
+                    if(newV.query.keyWords){
+                        this.getSelectArticle(newV.query.keyWords);
+                    }else {
+                        this.$http.get('http://localhost:3000/article?page=1').then(
+                            response=>{
+                                this.acticles=response.data
+                            }
+                        )
+                        this.getArticleNum();
+                    }
+
+                },
+                deep:true
+            }
+        },
+
     }
 </script>
 
@@ -133,15 +212,24 @@
 
 
 <style lang="scss" rel='stylesheet/scss'>
+    .myClass{
+        background-color: rgba(255,255,255,1) !important;
+    }
     .home{
         width: 1080px;
         padding: 50px 0 0 20px;
-        margin: 0 auto;
+        margin: 50px auto;
         color: #5e6d82;
+        overflow:hidden;
+        zoom:1;
+
 
         .active{
             background:#5e6d82;
             color: white;
+        }
+        .custom-class{
+
         }
         .home-left{
             width:650px;
@@ -276,6 +364,10 @@
                     margin-top: 20px;
                 }
             }
+            .el-dialog{
+                padding-right: 0;
+            }
+
         }
     }
 </style>
